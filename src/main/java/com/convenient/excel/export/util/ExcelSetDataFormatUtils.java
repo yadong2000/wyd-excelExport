@@ -1,6 +1,6 @@
 package com.convenient.excel.export.util;
 
-import com.convenient.excel.export.annotation.ExcelImportFiled;
+import com.convenient.excel.export.annotation.ExcelExportHead;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -69,7 +69,7 @@ public class ExcelSetDataFormatUtils {
             FieldInfo fieldInfo = f.getFieldInfo();
             AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
             if (attribute != null) {
-                Annotation importFiled = attribute.getAnnotation(ExcelImportFiled.class.getName());
+                Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
                 IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
                 IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
                 Integer integer = startRow.getValue();

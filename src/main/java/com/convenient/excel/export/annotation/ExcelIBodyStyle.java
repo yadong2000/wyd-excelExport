@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Target(value = {ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelIStyleFiled {
+public @interface ExcelIBodyStyle {
     /**
      * 水平居中
      */
@@ -25,23 +25,23 @@ public @interface ExcelIStyleFiled {
     /**
      * 字体名字
      */
-    String fontName() default "宋体";
+    String fontName() default "";
 
     /**
      * 水平大小
      */
-    short fontHeightInPoints();
+    short fontHeightInPoints() default -1;
 
 
     /**
      * 行高度,不是这
      */
-    short rowHight() default 25;
+    short rowHight() default -1;
 
     /**
      * 单元格的宽度
      */
-    int columnWidth() default 25;
+    int columnWidth() default -1;
 
     /**
      * 是否自动换行

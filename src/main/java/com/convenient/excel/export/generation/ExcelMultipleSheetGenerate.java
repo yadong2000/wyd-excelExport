@@ -70,6 +70,7 @@ public class ExcelMultipleSheetGenerate {
 
         for (int i = 0; i < this.list.size(); i++) {
             this.generate
+                    .setClassPool(this.list.get(i))
                     .generateHead(this.list.get(i).getName())//设置表头
                     .generateBody(lists[i])//设置主体
                     .generateFileName()//生成文件名字，测试用,文件路径默认是c://convenient.excel.export/convenient_export_id.xlsx
@@ -79,13 +80,14 @@ public class ExcelMultipleSheetGenerate {
 
 
     public void generateOne(List list) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException {
-        this.generate.generateHead(this.list.get(startIndex.get()).getName())//设置表头
+        this.generate
+                .setClassPool(this.list.get(startIndex.get()))
+                .generateHead(this.list.get(startIndex.get()).getName())//设置表头
                 .generateBody(list)//设置主体
                 .generateFileName()//生成文件名字，测试用,文件路径默认是c://convenient.excel.export/convenient_export_id.xlsx
                 .generateFile();//文件写入，测试用，不用加后缀
         startIndex.getAndIncrement();
     }
-
 
 
 }

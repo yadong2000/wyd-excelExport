@@ -12,8 +12,8 @@ public class Test {
 
     public static void main(String[] args) throws IOException, NoSuchFieldException, NotFoundException, IllegalAccessException {
         exportMultpileExcel(args);
-        exportExcel(args);
-        exportMultpileExcelMore(args);
+//        exportExcel(args);
+//        exportMultpileExcelMore(args);
     }
 
     public static void exportExcel(String[] args) throws NoSuchFieldException, IllegalAccessException,
@@ -42,7 +42,6 @@ public class Test {
         test.setHead("虎头");
         listTest.add(test);
         generate.generateOrder(listDemo, listTest);//按照入参顺序生成
-//        generate.generateOne(listDemo);//每次只生成一个sheet页，可以设置为异步生成，提升效率
 
     }
 

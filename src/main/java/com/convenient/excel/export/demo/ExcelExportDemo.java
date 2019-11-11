@@ -3,44 +3,20 @@ package com.convenient.excel.export.demo;
 import com.convenient.excel.export.annotation.*;
 
 
-@ExcelISheetFiled(name = "sheet1")
+@ExcelISheet(name = "sheet1")
 public class ExcelExportDemo {
 
-    @ExcelIStyleFiled(verticalAlignment = VerticalAlignment.CENTER,
-            horizontalAlignment = HorizontalAlignment.CENTER
-            , fontName = "宋体",
-            columnWidth = 20,
-            fontHeightInPoints = 100,
-            rowHight = 200,
-            wrapText = true)
-    @ExcelImportFiled(title = "名字", startRow = 0, endRow = 1, startCell = 0, endCell = 10)
+
+    @ExcelExportHead(title = "名字", startRow = 0, endRow = 1, startCell = 0, endCell = 3)
     private String name;
-    @ExcelIStyleFiled(verticalAlignment = VerticalAlignment.CENTER,
-            horizontalAlignment = HorizontalAlignment.CENTER
-            , fontName = "宋体",
-            columnWidth = 20,
-            fontHeightInPoints = 100,
-            rowHight = 200,
-            wrapText = true)
-    @ExcelImportFiled(title = "类型", startRow = 0, endRow = 1, startCell = 11, endCell = 15)
+
+    @ExcelExportHead(title = "类型", startRow = 0, endRow = 1, startCell = 4, endCell = 7)
     private String type;
-    @ExcelIStyleFiled(verticalAlignment = VerticalAlignment.CENTER,
-            horizontalAlignment = HorizontalAlignment.CENTER
-            , fontName = "宋体",
-            columnWidth = 20,
-            fontHeightInPoints = 100,
-            rowHight = 200,
-            wrapText = true)
-    @ExcelImportFiled(title = "年龄", startRow = 0, endRow = 1, startCell = 16, endCell = 17)
+
+    @ExcelExportHead(title = "年龄", startRow = 0, endRow = 1, startCell = 8, endCell = 9)
     private String age;
-    @ExcelIStyleFiled(verticalAlignment = VerticalAlignment.CENTER,
-            horizontalAlignment = HorizontalAlignment.CENTER
-            , fontName = "宋体",
-            columnWidth = 20,
-            fontHeightInPoints = 100,
-            rowHight = 200,
-            wrapText = true)
-    @ExcelImportFiled(title = "地址", startRow = 0, endRow = 1, startCell = 18, endCell = 20)
+
+    @ExcelExportHead(title = "地址", startRow = 0, endRow = 1, startCell = 10, endCell = 12)
     private String adrress;
 
 

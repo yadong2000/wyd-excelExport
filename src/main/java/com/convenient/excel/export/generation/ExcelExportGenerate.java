@@ -4,11 +4,10 @@ package com.convenient.excel.export.generation;
 import com.convenient.excel.export.util.ExcelConvenientFileUtil;
 import com.convenient.excel.export.util.ExcelGetClassUtils;
 import com.convenient.excel.export.annotation.ExcelIDataFormatFiled;
-import com.convenient.excel.export.annotation.ExcelISheetFiled;
-import com.convenient.excel.export.annotation.ExcelIStyleFiled;
-import com.convenient.excel.export.annotation.ExcelImportFiled;
+import com.convenient.excel.export.annotation.ExcelISheet;
+import com.convenient.excel.export.annotation.ExcelIHeadStyle;
+import com.convenient.excel.export.annotation.ExcelExportHead;
 import com.convenient.excel.export.constant.ExcelVersionEnum;
-import com.convenient.excel.export.demo.ExcelExportDemo;
 import com.convenient.excel.export.util.ExcelSheetUtils;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
@@ -95,9 +94,10 @@ public class ExcelExportGenerate<T> {
      * @throws NotFoundException
      */
     public ExcelExportGenerate generateHead(String className) throws IOException, NotFoundException, NoSuchFieldException, IllegalAccessException {
+
         CtClass ct = utils.javassistCtClass(className);
         this.className = className;
-        this.sheet = ExcelSheetUtils.setSheet(workBook, utils.getAnnotation(className, ExcelISheetFiled.class.getName()), this);
+        this.sheet = ExcelSheetUtils.setSheet(workBook, utils.getAnnotation(className, ExcelISheet.class.getName()), this);
         this.utils.getRowMap(sheet);
         //遍历字段属性
         CtField[] fields = ct.getDeclaredFields();
@@ -141,7 +141,7 @@ public class ExcelExportGenerate<T> {
             return;
         }
         //获取表头信息 ，缺少列高
-        Annotation importFiled = attribute.getAnnotation(ExcelImportFiled.class.getName());
+        Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
         IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
         IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
         IntegerMemberValue startCell = (IntegerMemberValue) importFiled.getMemberValue("startCell");
@@ -180,7 +180,7 @@ public class ExcelExportGenerate<T> {
         }
 
         //样式设置
-        CellStyle xssfCellStyle = updateExcelStyle(cell, row, attribute.getAnnotation(ExcelIStyleFiled.class.getName()));
+        CellStyle xssfCellStyle = updateExcelStyle(cell, row, attribute.getAnnotation(ExcelIHeadStyle.class.getName()));
         cell.setCellValue(titleValue);
         if (type == 0) {
             Annotation dataformatFiled = attribute.getAnnotation(ExcelIDataFormatFiled.class.getName());
@@ -210,6 +210,7 @@ public class ExcelExportGenerate<T> {
 
     private CellStyle updateExcelStyle(Cell cell, Row row, Annotation style) {
         CellStyle cellStyle = this.workBook.createCellStyle();
+        if (style == null) return cellStyle;
 
         ShortMemberValue rowHight = (ShortMemberValue) style.getMemberValue("rowHight");
         if (rowHight != null) {
@@ -321,9 +322,6 @@ public class ExcelExportGenerate<T> {
         this.id = aLong;
         return this;
     }
-
-
-
 
 
 }
