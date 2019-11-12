@@ -22,10 +22,7 @@ public @interface ExcelIHeadStyle {
      */
     VerticalAlignment verticalAlignment() default VerticalAlignment.CENTER;
 
-    /**
-     * 字体名字
-     */
-    String fontName() default "";
+
 
     /**
      * 水平大小

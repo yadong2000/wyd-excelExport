@@ -3,7 +3,7 @@ package com.convenient.excel.export.demo;
 import com.convenient.excel.export.annotation.*;
 
 
-@ExcelISheet(name = {"sheet2"})
+@ExcelISheet(name = "sheet2")
 public class ExcelExportTest {
 
 

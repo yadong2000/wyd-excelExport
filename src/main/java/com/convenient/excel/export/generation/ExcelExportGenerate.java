@@ -1,14 +1,9 @@
 package com.convenient.excel.export.generation;
 
 
-import com.convenient.excel.export.util.ExcelConvenientFileUtil;
-import com.convenient.excel.export.util.ExcelGetClassUtils;
-import com.convenient.excel.export.annotation.ExcelIDataFormatFiled;
-import com.convenient.excel.export.annotation.ExcelISheet;
-import com.convenient.excel.export.annotation.ExcelIHeadStyle;
-import com.convenient.excel.export.annotation.ExcelExportHead;
+import com.convenient.excel.export.annotation.*;
+import com.convenient.excel.export.util.*;
 import com.convenient.excel.export.constant.ExcelVersionEnum;
-import com.convenient.excel.export.util.ExcelSheetUtils;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.FieldInfo;
@@ -17,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -26,10 +23,12 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.convenient.excel.export.util.ExcelConvenientFileUtil.CONVENIENT_EXPORT_NAME;
 import static com.convenient.excel.export.util.ExcelConvenientFileUtil.CONVENIENT_EXPORT_PATH;
 import static com.convenient.excel.export.util.ExcelConvenientFileUtil.addNum;
+import static com.convenient.excel.export.util.ExcelHeadUtil.mergeSheet;
 
 
 public class ExcelExportGenerate<T> {
@@ -42,6 +41,8 @@ public class ExcelExportGenerate<T> {
     private Sheet sheet;
     private String suffix;
     private Long id;
+    private AtomicInteger startIndex = new AtomicInteger(0);
+    private AtomicInteger endIndex = new AtomicInteger(0);
     private final Map<String, String> annotrationMap = new HashMap();
     private final Map<String, List> multpleMap = new HashMap();
 
@@ -115,7 +116,10 @@ public class ExcelExportGenerate<T> {
         //创建row,在创建多行
         int startFillIndex = this.utils.getStartFillIndex();
         for (int i = 0; i < size; i++) {
+            //这里要注意有多行的时候
             Row row = this.sheet.createRow(startFillIndex + i);
+            startIndex.set(startFillIndex + i);
+            endIndex.set(startFillIndex + i);
             T t = list.get(i);
             CtClass ctClass = this.utils.javassistCtClass(t.getClass().getName());
             CtField[] declaredFields = ctClass.getDeclaredFields();
@@ -128,7 +132,7 @@ public class ExcelExportGenerate<T> {
 
     /**
      * @param f     对应celld的字段
-     * @param type  1=生成head
+     * @param type  1=生成head 0=生成列表
      * @param row1  对应execl的行
      * @param clazz 对应cell字段的值 ，在generateHead为空
      * @throws NoSuchFieldException
@@ -137,78 +141,47 @@ public class ExcelExportGenerate<T> {
     private void set(CtField f, int type, Row row1, T clazz) throws NoSuchFieldException, IllegalAccessException {
         FieldInfo fieldInfo = f.getFieldInfo();
         AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
-        if (attribute == null) {
+        if (attribute == null || fieldInfo == null) {
             return;
         }
-        //获取表头信息 ，缺少列高
-        Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
-        IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
-        IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
-        IntegerMemberValue startCell = (IntegerMemberValue) importFiled.getMemberValue("startCell");
-        IntegerMemberValue endCell = (IntegerMemberValue) importFiled.getMemberValue("endCell");
-        StringMemberValue title = (StringMemberValue) importFiled.getMemberValue("title");
-        BooleanMemberValue exclue = (BooleanMemberValue) importFiled.getMemberValue("exclue");
-        Integer integer = startRow.getValue();
-
-        Row row = this.utils.getRowMap(sheet).get(integer);
-        String titleValue = title.getValue();
-        if (type == 0) {
-            Field declaredField = clazz.getClass().getDeclaredField(f.getName());
-            declaredField.setAccessible(true);
-            Object value = declaredField.get(clazz);
-            if (value == null) {
-                return;
-            }
-            row = row1;
-            titleValue = (String) value;
+        //设置表头
+        ExcelHeadUtil.ExcelPosition excelPosition = ExcelHeadUtil.setHead(attribute, type);
+        //初始化表头用
+        Row row = ExcelHeadUtil.createRow(excelPosition, this, row1, sheet);
+        //合并单元格
+        if (excelPosition.getType() == 0) {
+            excelPosition.setStartRow(this.startIndex.get());
+            excelPosition.setEndRow(this.endIndex.get() + excelPosition.getExclue());
         }
+        mergeSheet(sheet, excelPosition, row.getRowNum());
+        //初始化cellValue的值
+        String titleValue = (String) ExcelHeadUtil.setCellValue(excelPosition, clazz, f);
+        //文本替换
         if (type == 1) {
             String annotationValue = this.annotrationMap.get(titleValue);
             if (StringUtils.isNotBlank(annotationValue)) {
                 titleValue = annotationValue;
             }
-
         }
-//        System.out.println("row num is " + row.getRowNum() + "  titleValue-- > " + titleValue + " cell num is " + startCell.getValue());
-
-        Cell cell = row.createCell(startCell.getValue());
-        if (type == 1) {
-            if (exclue == null || exclue.getValue() == Boolean.TRUE) {
-                sheet.addMergedRegion(new CellRangeAddress(integer, endRow.getValue(),
-                        startCell.getValue(), endCell.getValue()));
-            }
-        }
-
-        //样式设置
-        CellStyle xssfCellStyle = updateExcelStyle(cell, row, attribute.getAnnotation(ExcelIHeadStyle.class.getName()));
+        //创建单元格,一行有很多个单元格
+        Cell cell = row.createCell(excelPosition.getStartCell());
+        //单元格样式设置
+        CellStyle xssfCellStyle = updateExcelStyle(cell, row, attribute, excelPosition);
+        //设置单元格值
         cell.setCellValue(titleValue);
-        if (type == 0) {
-            Annotation dataformatFiled = attribute.getAnnotation(ExcelIDataFormatFiled.class.getName());
-            if (dataformatFiled != null) {
-                ShortMemberValue dataFormat = (ShortMemberValue) dataformatFiled.getMemberValue("dataFormat");
-                short format = this.dataFormat.getFormat("0.00");
-                if (dataFormat != null) {
-                    setDataFormat(xssfCellStyle, format);
-                    if (StringUtils.isNotBlank(titleValue)) {
-                        if (titleValue instanceof String) {
-                            cell.setCellValue(new Double(titleValue));
-                        } else {
-                            cell.setCellValue(titleValue);
-                        }
-                    }
+        //设置单元格 格式化
+        ExcelSetDataFormatUtils.setDataFormat(xssfCellStyle, this, excelPosition, cell, attribute);
+    }
 
 
-                }
+    private CellStyle updateExcelStyle(Cell cell, Row row, AnnotationsAttribute attribute, ExcelHeadUtil.ExcelPosition excelPosition) {
+        Annotation style = attribute.getAnnotation(ExcelIHeadStyle.class.getName());
+        if (excelPosition.getType() == 0) {
+            Annotation styleBody = attribute.getAnnotation(ExcelIBodyStyle.class.getName());
+            if (styleBody != null) {
+                style = styleBody;
             }
         }
-
-    }
-
-    private void setDataFormat(CellStyle cellStyle, short dataFormat) {
-        cellStyle.setDataFormat(dataFormat);
-    }
-
-    private CellStyle updateExcelStyle(Cell cell, Row row, Annotation style) {
         CellStyle cellStyle = this.workBook.createCellStyle();
         if (style == null) return cellStyle;
 
@@ -217,20 +190,22 @@ public class ExcelExportGenerate<T> {
             row.setHeight(rowHight.getValue());
         }
         EnumMemberValue horizontalAlignment = (EnumMemberValue) style.getMemberValue("horizontalAlignment");
-        if (horizontalAlignment != null) {
-//            cellStyle.setAlignment(HorizontalAlignment.valueOf(horizontalAlignment.getValue()));
+        if (horizontalAlignment == null) {
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        } else {
+            cellStyle.setAlignment(HorizontalAlignment.valueOf(horizontalAlignment.getValue()));
         }
         EnumMemberValue verticalAlignment = (EnumMemberValue) style.getMemberValue("verticalAlignment");
-        if (verticalAlignment != null) {
-//            VerticalAlignment verticalAlignment1 = VerticalAlignment.valueOf(verticalAlignment.getValue());
-//            cellStyle.setVerticalAlignment(verticalAlignment1);
-            VerticalAlignment center = VerticalAlignment.CENTER;
-            cellStyle.setVerticalAlignment(center);
-
+        if (verticalAlignment == null) {
+            cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        } else {
+            cellStyle.setVerticalAlignment(VerticalAlignment.valueOf(verticalAlignment.getValue()));
         }
+
         BooleanMemberValue booleanMemberValue = (BooleanMemberValue) style.getMemberValue("wrapText");
-        if (booleanMemberValue != null) {
+        if (booleanMemberValue == null) {
+            cellStyle.setWrapText(true);
+        } else {
             cellStyle.setWrapText(booleanMemberValue.getValue());
         }
         IntegerMemberValue columnWidth = (IntegerMemberValue) style.getMemberValue("columnWidth");

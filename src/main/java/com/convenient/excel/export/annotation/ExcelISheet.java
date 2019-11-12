@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExcelISheet {
     //
-    String[] name() default "sheet1";
+    String  name() default "sheet1";
 
 
     String namespace() default "";

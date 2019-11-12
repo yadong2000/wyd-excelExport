@@ -28,8 +28,7 @@ public @interface ExcelExportHead {
     //结束单元格
     int endCell();
 
-    //是否排序单元格合并
-    boolean exclue() default false;
+
 
 
 }

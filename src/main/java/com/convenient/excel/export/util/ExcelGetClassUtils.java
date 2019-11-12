@@ -62,7 +62,6 @@ public class ExcelGetClassUtils {
             return concurrentSheetHashMap.get(sheet);
         }
         CtField[] fields = ctClass.getDeclaredFields();
-        HSSFRow row = null;
         for (CtField f : fields) {
             FieldInfo fieldInfo = f.getFieldInfo();
             AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);

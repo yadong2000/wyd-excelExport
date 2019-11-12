@@ -13,14 +13,7 @@ import java.lang.annotation.Target;
 @Target(value = {ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExcelExportBody {
-    //标题
-    String title();
 
-    //起始行
-    int startRow();
-
-    //结束行
-    int endRow();
 
     // 开始单元格
     int startCell();
@@ -29,7 +22,7 @@ public @interface ExcelExportBody {
     int endCell();
 
     //是否排序单元格合并
-    boolean exclue() default false;
+    int exclue() default 0;
 
 
 }
