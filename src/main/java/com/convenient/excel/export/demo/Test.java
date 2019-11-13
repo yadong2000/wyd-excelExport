@@ -11,8 +11,8 @@ import java.util.List;
 public class Test {
 
     public static void main(String[] args) throws IOException, NoSuchFieldException, NotFoundException, IllegalAccessException {
-        exportMultpileExcel(args);
-//        exportExcel(args);
+//        exportMultpileExcel(args);
+        exportExcel(args);
 //        exportMultpileExcelMore(args);
     }
 
