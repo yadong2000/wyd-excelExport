@@ -1,24 +1,23 @@
-package com.convenient.excel.export.demo;
+package exceltest;
 
+import com.convenient.excel.export.demo.ExcelExportDemo;
+import com.convenient.excel.export.demo.ExcelExportTest;
 import com.convenient.excel.export.generation.ExcelExportGenerate;
 import com.convenient.excel.export.generation.ExcelMultipleSheetGenerate;
 import javassist.NotFoundException;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Test {
+public class TestExcelExport {
 
-    public static void main(String[] args) throws IOException, NoSuchFieldException, NotFoundException, IllegalAccessException {
-//        exportMultpileExcel(args);
-        exportExcel(args);
-//        exportMultpileExcelMore(args);
-    }
 
-    public static void exportExcel(String[] args) throws NoSuchFieldException, IllegalAccessException,
+    @Test
+    public   void exportExcel() throws NoSuchFieldException, IllegalAccessException,
             NotFoundException, IOException {
-        List list = new ArrayList ();
+        List list = new ArrayList();
         new ExcelExportGenerate()
                 .generateXssfWorkook()//设置excel版本
                 .generateHead(ExcelExportDemo.class.getName())//设置表头
@@ -27,11 +26,11 @@ public class Test {
                 .generateFile();//文件写入，测试用，不用加后缀
     }
 
-
-    public static void exportMultpileExcel(String[] args) throws IllegalAccessException, IOException, NotFoundException, NoSuchFieldException {
+    @Test
+    public   void exportMultpileExcel() throws IllegalAccessException, IOException, NotFoundException, NoSuchFieldException {
         ExcelMultipleSheetGenerate generate = new ExcelMultipleSheetGenerate();
         generate.generateMultipleSheet(ExcelExportDemo.class, ExcelExportTest.class);
-        List<ExcelExportDemo> listDemo = new ArrayList ();
+        List<ExcelExportDemo> listDemo = new ArrayList();
         ExcelExportDemo demo = new ExcelExportDemo();
         demo.setAdrress("淀海京北国啊啊实打实大苏打啊实打实大苏打实打实撒打算大苏打阿萨大撒大撒大苏打阿斯顿啊实打实的阿三中");
         demo.setName("白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪白垩纪");
@@ -45,7 +44,8 @@ public class Test {
 
     }
 
-    public static void exportMultpileExcelMore(String[] args) throws IllegalAccessException, IOException, NotFoundException, NoSuchFieldException {
+    @Test
+    public   void exportMultpileExcelMore() throws IllegalAccessException, IOException, NotFoundException, NoSuchFieldException {
         ExcelMultipleSheetGenerate generate = new ExcelMultipleSheetGenerate();
         generate.generateMultipleSheet(ExcelExportDemo.class, ExcelExportTest.class);
         List<ExcelExportDemo> listDemo = new ArrayList<>();
