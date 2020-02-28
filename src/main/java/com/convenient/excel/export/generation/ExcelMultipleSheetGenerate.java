@@ -59,7 +59,7 @@ public class ExcelMultipleSheetGenerate {
      * @See generateMultipleSheet
      */
     public void generateOrder(List... lists) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException {
-        if (lists == null && lists.length == 0) {
+        if (lists == null || lists.length == 0) {
             throw new IllegalArgumentException("Generate excel list must not null and must not be empty");
         }
         if (lists.length != this.list.size()) {

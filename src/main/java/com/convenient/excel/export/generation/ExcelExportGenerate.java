@@ -14,13 +14,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -96,7 +94,7 @@ public class ExcelExportGenerate<T> {
      */
     public ExcelExportGenerate generateHead(String className) throws IOException, NotFoundException, NoSuchFieldException, IllegalAccessException {
 
-        CtClass ct = utils.javassistCtClass(className);
+        CtClass ct = utils.getCtClass(className);
         this.className = className;
         this.sheet = ExcelSheetUtils.setSheet(workBook, utils.getAnnotation(className, ExcelISheet.class.getName()), this);
         this.utils.getRowMap(sheet);
@@ -121,7 +119,7 @@ public class ExcelExportGenerate<T> {
             startIndex.set(startFillIndex + i);
             endIndex.set(startFillIndex + i);
             T t = list.get(i);
-            CtClass ctClass = this.utils.javassistCtClass(t.getClass().getName());
+            CtClass ctClass = this.utils.getCtClass(t.getClass().getName());
             CtField[] declaredFields = ctClass.getDeclaredFields();
             for (CtField field : declaredFields) {
                 set(field, 0, row, t);

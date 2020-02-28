@@ -5,6 +5,9 @@ import com.convenient.excel.export.annotation.ExcelIBodyStyle;
 import com.convenient.excel.export.annotation.ExcelIHeadStyle;
 import com.convenient.excel.export.annotation.ExcelISheet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @ExcelISheet(name = "sheet1")
 public class ExcelExportDemo {
@@ -30,6 +33,35 @@ public class ExcelExportDemo {
     @ExcelIBodyStyle(wrapText = true, rowHight = 800)
     private String adrress;
 
+    private List<Pv> pvList=new ArrayList<>();
+    public static class Pv{
+        private String current;
+        private String volt;
+
+        public String getCurrent() {
+            return current;
+        }
+
+        public void setCurrent(String current) {
+            this.current = current;
+        }
+
+        public String getVolt() {
+            return volt;
+        }
+
+        public void setVolt(String volt) {
+            this.volt = volt;
+        }
+    }
+
+    public List<Pv> getPvList() {
+        return pvList;
+    }
+
+    public void setPvList(List<Pv> pvList) {
+        this.pvList = pvList;
+    }
 
     public String getName() {
         return name;

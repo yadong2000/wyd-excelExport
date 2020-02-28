@@ -7,7 +7,6 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.IntegerMemberValue;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -27,21 +26,18 @@ public class ExcelGetClassUtils {
      * @throws NotFoundException
      */
     public ClassFile javassistPool(String className) throws NotFoundException {
-        classFile = javassistCtClass(className).getClassFile();
+        classFile = getCtClass(className).getClassFile();
         return classFile;
     }
 
     public ExcelGetClassUtils setClassPool(Class clazz) {
         pool = ClassPool.getDefault();
         pool.insertClassPath(new ClassClassPath(clazz));
-
         return this;
     }
 
-    public CtClass javassistCtClass(String className) throws NotFoundException {
-        pool = ClassPool.getDefault();
-
-        ctClass = pool.get(className);
+    public CtClass getCtClass(String className) throws NotFoundException {
+        ctClass = ClassPool.getDefault().get(className);
         return ctClass;
     }
 

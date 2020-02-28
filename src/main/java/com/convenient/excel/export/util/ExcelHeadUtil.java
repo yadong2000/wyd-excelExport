@@ -30,7 +30,7 @@ public class ExcelHeadUtil {
      */
     public static ExcelPosition setHead(AnnotationsAttribute attribute, int type) {
         Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
-       IntegerMemberValue exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
+        IntegerMemberValue exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
         ExcelPosition excelPosition = new ExcelPosition();
         excelPosition.setLogicType(1);
         if (type == 0) {
@@ -60,6 +60,13 @@ public class ExcelHeadUtil {
     }
 
 
+    /**
+     * 当单元格为一行时，合并单元格
+     *
+     * @param sheet
+     * @param excelPosition
+     * @param rowNum
+     */
     public static void mergeSheet(Sheet sheet, ExcelPosition excelPosition, int rowNum) {
         if (!(excelPosition.getStartCell().equals(excelPosition.getEndCell()) && excelPosition.getStartRow().equals(excelPosition.getEndRow()))) {
             sheet.addMergedRegion(new CellRangeAddress(excelPosition.getStartRow(), excelPosition.getEndRow(),
