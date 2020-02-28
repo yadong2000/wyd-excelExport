@@ -1,6 +1,7 @@
-package com.convenient.excel.export.demo;
+package exceltest;
 
-import com.convenient.excel.export.annotation.*;
+import com.convenient.excel.export.annotation.ExcelExportHead;
+import com.convenient.excel.export.annotation.ExcelISheet;
 
 
 @ExcelISheet(name = "sheet2")
