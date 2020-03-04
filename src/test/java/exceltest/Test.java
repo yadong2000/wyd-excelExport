@@ -1,6 +1,5 @@
 package exceltest;
 
-import com.convenient.excel.export.constant.ExcelExportDemo;
 import com.convenient.excel.export.generation.ExcelExportGenerate;
 import com.convenient.excel.export.generation.ExcelMultipleSheetGenerate;
 import javassist.CannotCompileException;
