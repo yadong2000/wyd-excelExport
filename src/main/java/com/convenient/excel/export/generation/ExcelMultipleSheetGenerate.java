@@ -58,7 +58,7 @@ public class ExcelMultipleSheetGenerate {
      * @throws InvocationTargetException
      * @See generateMultipleSheet
      */
-    public void generateOrder(List... lists) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException {
+    public void generateOrder(List... lists) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException, CannotCompileException, ClassNotFoundException {
         if (lists == null || lists.length == 0) {
             throw new IllegalArgumentException("Generate excel list must not null and must not be empty");
         }
@@ -77,7 +77,7 @@ public class ExcelMultipleSheetGenerate {
     }
 
 
-    public void generateOne(List list) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException {
+    public void generateOne(List list) throws NoSuchFieldException, IllegalAccessException, NotFoundException, IOException, CannotCompileException, ClassNotFoundException {
         this.generate
                 .setClassPool(this.list.get(startIndex.get()))
                 .generateHead(this.list.get(startIndex.get()).getName())//设置表头

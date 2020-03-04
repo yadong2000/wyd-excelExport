@@ -68,17 +68,4 @@ public class ExcelConvenientFileUtil {
         return atomicLong.get();
     }
 
-    public static void main(String[] args) throws IOException {
-
-        fileNoExsitsMake("C://data//history.history");
-        IntStream.range(0, 10).forEach(i -> {
-            try {
-                addNum();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        addNum();
-
-    }
 }

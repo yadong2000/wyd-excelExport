@@ -2,6 +2,7 @@ package com.convenient.excel.export.util;
 
 import com.convenient.excel.export.annotation.ExcelExportBody;
 import com.convenient.excel.export.annotation.ExcelExportHead;
+import com.convenient.excel.export.annotation.ExcelListField;
 import com.convenient.excel.export.generation.ExcelExportGenerate;
 import javassist.CtField;
 import javassist.bytecode.AnnotationsAttribute;
@@ -28,34 +29,52 @@ public class ExcelHeadUtil {
      * @param attribute
      * @param type      1:head 0:生成列表
      */
-    public static ExcelPosition setHead(AnnotationsAttribute attribute, int type) {
-        Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
-        IntegerMemberValue exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
+    public static ExcelPosition setHead(AnnotationsAttribute attribute, int type, ExcelListFieldUtils.ListField listField, int index, int titleIndex) {
         ExcelPosition excelPosition = new ExcelPosition();
-        excelPosition.setLogicType(1);
-        if (type == 0) {
-            Annotation importFiledBody = attribute.getAnnotation(ExcelExportBody.class.getName());
-            if (importFiledBody != null) {
-                importFiled = null;
-                importFiled = importFiledBody;
+        Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
+        if (importFiled != null) {
+            IntegerMemberValue exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
+            excelPosition.setLogicType(1);
+            if (type == 0) {
+                Annotation importFiledBody = attribute.getAnnotation(ExcelExportBody.class.getName());
+                if (importFiledBody != null) {
+                    importFiled = null;
+                    importFiled = importFiledBody;
+                }
+                exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
             }
-            exclue = (IntegerMemberValue) importFiled.getMemberValue("exclue");
-        }
 
-        IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
-        IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
-        IntegerMemberValue startCell = (IntegerMemberValue) importFiled.getMemberValue("startCell");
-        IntegerMemberValue endCell = (IntegerMemberValue) importFiled.getMemberValue("endCell");
-        StringMemberValue title = (StringMemberValue) importFiled.getMemberValue("title");
-        excelPosition.setEndCell(endCell.getValue());
-        excelPosition.setEndRow(endRow.getValue());
-        excelPosition.setStartCell(startCell.getValue());
-        excelPosition.setStartRow(startRow.getValue());
-        excelPosition.setTitle(title.getValue());
-        if (exclue != null) {
-            excelPosition.setExclue(exclue.getValue());
+            IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
+            IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
+            IntegerMemberValue startCell = (IntegerMemberValue) importFiled.getMemberValue("startCell");
+            IntegerMemberValue endCell = (IntegerMemberValue) importFiled.getMemberValue("endCell");
+            StringMemberValue title = (StringMemberValue) importFiled.getMemberValue("title");
+            if (endCell != null) {
+                excelPosition.setEndCell(endCell.getValue());
+            }
+            if (startCell != null) {
+                excelPosition.setStartCell(startCell.getValue());
+            }
+
+            excelPosition.setEndRow(endRow.getValue());
+
+            excelPosition.setStartRow(startRow.getValue());
+            excelPosition.setTitle(title.getValue());
+            if (exclue != null) {
+                excelPosition.setExclue(exclue.getValue());
+            }
+            excelPosition.setType(type);
+
+            if (listField != null) {
+                excelPosition.setEndRow(listField.getEndRow());
+                excelPosition.setStartRow(listField.getStartRow());
+                excelPosition.setStartCell(index + 1);
+                excelPosition.setEndCell(index+ listField.getCellDistance());
+                excelPosition.setTitle(title.getValue() + titleIndex);
+            }
+        } else {
+            return null;
         }
-        excelPosition.setType(type);
         return excelPosition;
     }
 
@@ -85,9 +104,9 @@ public class ExcelHeadUtil {
         return excelPosition.getTitle();
     }
 
-    public static Row createRow(ExcelPosition excelPosition, ExcelExportGenerate generate, Row row, Sheet sheet) throws NoSuchFieldException, IllegalAccessException {
+    public static Row createRow(ExcelPosition excelPosition, ExcelExportGenerate generate, Row row, Sheet sheet) {
         if (excelPosition.getType() == 0) return row;
-        return generate.getUtils().getRowMap(sheet).get(excelPosition.getStartRow());
+        return generate.getUtils().getRowMap(sheet, excelPosition).get(excelPosition.getStartRow());
     }
 
 

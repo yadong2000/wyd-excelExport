@@ -23,12 +23,12 @@ public @interface ExcelExportHead {
     int endRow();
 
     // 开始单元格
-    int startCell();
+    int startCell() default -1;
 
     //结束单元格
-    int endCell();
+    int endCell() default -1;
 
-
+    boolean isListField() default false;
 
 
 }

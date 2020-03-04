@@ -53,22 +53,37 @@ public class ExcelGetClassUtils {
         return classAttribute.getAnnotation(annotationName);
     }
 
-    public Map<Integer, Row> getRowMap(Sheet sheet) {
+    public Map<Integer, Row> getRowMap(Sheet sheet, ExcelHeadUtil.ExcelPosition excelPosition) {
         if (this.concurrentSheetHashMap.get(sheet) != null) {
             return concurrentSheetHashMap.get(sheet);
         }
-        CtField[] fields = ctClass.getDeclaredFields();
-        for (CtField f : fields) {
-            FieldInfo fieldInfo = f.getFieldInfo();
-            AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
-            if (attribute != null) {
-                Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
-                IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
-                IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
-                Integer integer = startRow.getValue();
-                putRow(integer, sheet);
-                putRow(endRow.getValue(), sheet);
-            }
+//        CtField[] fields = ctClass.getDeclaredFields();
+//        for (CtField f : fields) {
+//            FieldInfo fieldInfo = f.getFieldInfo();
+//            AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
+//            if (attribute != null) {
+//                Annotation importFiled = attribute.getAnnotation(ExcelExportHead.class.getName());
+//                if(importFiled!=null){
+//                    IntegerMemberValue startRow = (IntegerMemberValue) importFiled.getMemberValue("startRow");
+//                    IntegerMemberValue endRow = (IntegerMemberValue) importFiled.getMemberValue("endRow");
+//                    if (startRow != null) {
+//                        Integer integer = startRow.getValue();
+//                        putRow(integer, sheet);
+//                    }
+//                    if (endRow != null) {
+//                        putRow(endRow.getValue(), sheet);
+//                    }
+//
+//                }
+//
+//
+//            }
+//        }
+        if (excelPosition.getStartRow() != null) {
+            putRow(excelPosition.getStartRow(), sheet);
+        }
+        if (excelPosition.getEndRow() != null) {
+            putRow(excelPosition.getEndRow(), sheet);
         }
         concurrentSheetHashMap.put(sheet, this.concurrentHashMap);
         return concurrentSheetHashMap.get(sheet);

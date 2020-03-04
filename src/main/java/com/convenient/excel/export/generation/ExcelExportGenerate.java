@@ -2,6 +2,7 @@ package com.convenient.excel.export.generation;
 
 
 import com.convenient.excel.export.annotation.*;
+import com.convenient.excel.export.constant.ExcelExportDemo;
 import com.convenient.excel.export.util.*;
 import com.convenient.excel.export.constant.ExcelVersionEnum;
 import javassist.*;
@@ -19,6 +20,7 @@ import org.apache.poi.xssf.usermodel.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,10 +41,15 @@ public class ExcelExportGenerate<T> {
     private Sheet sheet;
     private String suffix;
     private Long id;
+    private CtClass ctClass;
     private AtomicInteger startIndex = new AtomicInteger(0);
     private AtomicInteger endIndex = new AtomicInteger(0);
     private final Map<String, String> annotrationMap = new HashMap();
     private final Map<String, List> multpleMap = new HashMap();
+    private int excellIndex = 0;
+    private int excellIndexFlag = 0;
+    private int titleIndex = 1;
+    private List<List> fieldList = new ArrayList<>();
 
 
     public ExcelExportGenerate(ExcelGetClassUtils utils) {
@@ -80,6 +87,14 @@ public class ExcelExportGenerate<T> {
         return this;
     }
 
+    public ExcelListFieldUtils.ListField getListField(Annotation value2) {
+        IntegerMemberValue cellDistance = (IntegerMemberValue) value2.getMemberValue("cellDistance");
+        IntegerMemberValue startRow = (IntegerMemberValue) value2.getMemberValue("startRow");
+        IntegerMemberValue endRow = (IntegerMemberValue) value2.getMemberValue("endRow");
+        ExcelListFieldUtils.ListField field = new ExcelListFieldUtils.ListField(cellDistance.getValue(), startRow.getValue(), endRow.getValue());
+        return field;
+    }
+
 
     public ExcelExportGenerate setClassPool(Class clazz) {
         this.utils.setClassPool(clazz);
@@ -92,73 +107,138 @@ public class ExcelExportGenerate<T> {
      * @throws IOException
      * @throws NotFoundException
      */
-    public ExcelExportGenerate generateHead(String className) throws IOException, NotFoundException, NoSuchFieldException, IllegalAccessException {
-
-        CtClass ct = utils.getCtClass(className);
-        this.className = className;
-        this.sheet = ExcelSheetUtils.setSheet(workBook, utils.getAnnotation(className, ExcelISheet.class.getName()), this);
-        this.utils.getRowMap(sheet);
-        //遍历字段属性
-        CtField[] fields = ct.getDeclaredFields();
-        for (CtField f : fields) {
-            set(f, 1, null, null);
+    public ExcelExportGenerate generateHead(String className) throws
+            NotFoundException, NoSuchFieldException, IllegalAccessException {
+        if (StringUtils.isBlank(className)) {
+            throw new IllegalArgumentException("class name is not empty");
         }
+        this.className = className;
+//        this.utils.getRowMap(getSheet(),null);
+        //遍历字段属性
+        CtField[] fields = getCtClass(className).getDeclaredFields();
+        int index = 0;
+        for (CtField field : fields) {
+            List list = null;
+            if (index <= fieldList.size() - 1) {
+                list = fieldList.get(index);
+            }
 
+            Annotation hasListField = hasListField(field, list);
+            if (null != hasListField) {
+                ExcelListFieldUtils.ListField listField = getListField(hasListField);
+                for (int i = 0; i < list.size(); i++) {
+                    Object o = list.get(i);
+                    CtField[] subfields = ClassPool.getDefault().get(o.getClass().getName()).getDeclaredFields();
+                    for (int i1 = 0; i1 < subfields.length; i1++) {
+                        set(subfields[i1], 1, null, null, listField);
+                    }
+                    titleIndex++;
+                }
+                listField = null;
+                index++;
+            } else {
+                set(field, 1, null, null, null);
+            }
+        }
         return this;
     }
 
     public ExcelExportGenerate<T> generateBody(List<T> list) throws NotFoundException
             , IllegalAccessException, NoSuchFieldException {
+        this.excellIndex = 0;
+        this.excellIndexFlag = 0;
+        this.titleIndex = 1;
         int size = list.size();
         this.dataFormat = this.workBook.createDataFormat();
         //创建row,在创建多行
         int startFillIndex = this.utils.getStartFillIndex();
+
         for (int i = 0; i < size; i++) {
             //这里要注意有多行的时候
             Row row = this.sheet.createRow(startFillIndex + i);
             startIndex.set(startFillIndex + i);
             endIndex.set(startFillIndex + i);
+
+
             T t = list.get(i);
             CtClass ctClass = this.utils.getCtClass(t.getClass().getName());
             CtField[] declaredFields = ctClass.getDeclaredFields();
+            int index = 0;
+            this.excellIndex = 0;
+            this.excellIndexFlag=0;
             for (CtField field : declaredFields) {
-                set(field, 0, row, t);
+//                CtField ctField = new CtField(this.ctClass);
+                List listfield = null;
+                Annotation hasListField = hasListField(field, listfield);
+                if (null != hasListField) {
+                    Field declaredField = t.getClass().getDeclaredField(field.getName());
+                    declaredField.setAccessible(true);
+                    listfield = (List) declaredField.get(t);
+                    ExcelListFieldUtils.ListField listField = getListField(hasListField);
+                    for (int j = 0; j < listfield.size(); j++) {
+                        Object o = listfield.get(j);
+                        CtField[] subfields = ClassPool.getDefault().get(o.getClass().getName()).getDeclaredFields();
+                        for (int i1 = 0; i1 < subfields.length; i1++) {
+                            set(subfields[i1], 0, row, (T) o, listField);
+                        }
+                        titleIndex++;
+                    }
+                    listField = null;
+                    index++;
+                } else {
+                    set(field, 0, row, t, null);
+                }
+
             }
         }
         return this;
     }
 
     /**
-     * @param f     对应celld的字段
+     * @param field 对应celld的字段
      * @param type  1=生成head 0=生成列表
      * @param row1  对应execl的行
      * @param clazz 对应cell字段的值 ，在generateHead为空
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
+     * @throws NotFoundException
      */
-    private void set(CtField f, int type, Row row1, T clazz) throws NoSuchFieldException, IllegalAccessException {
-        FieldInfo fieldInfo = f.getFieldInfo();
+    private void set(CtField field, int type, Row row1, T clazz, ExcelListFieldUtils.ListField listField) throws NoSuchFieldException, IllegalAccessException, NotFoundException {
+        FieldInfo fieldInfo = field.getFieldInfo();
         AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
         if (attribute == null || fieldInfo == null) {
             return;
         }
         //设置表头
-        ExcelHeadUtil.ExcelPosition excelPosition = ExcelHeadUtil.setHead(attribute, type);
+        ExcelHeadUtil.ExcelPosition excelPosition = ExcelHeadUtil.setHead(attribute, type, listField, excellIndex, titleIndex);
+        if (excelPosition == null) {
+            return;
+        }
         //初始化表头用
-        Row row = ExcelHeadUtil.createRow(excelPosition, this, row1, sheet);
+        Row row = ExcelHeadUtil.createRow(excelPosition, this, row1, getSheet());
         //合并单元格
         if (excelPosition.getType() == 0) {
             excelPosition.setStartRow(this.startIndex.get());
             excelPosition.setEndRow(this.endIndex.get() + excelPosition.getExclue());
         }
-        mergeSheet(sheet, excelPosition, row.getRowNum());
+        excellIndexFlag = excellIndex;
+        excellIndex = excelPosition.getEndCell();
+        if (excellIndex < excellIndexFlag) {
+            int i = excelPosition.getEndCell() - excelPosition.getStartCell();
+            excelPosition.setStartCell(excellIndexFlag + 1);
+            excelPosition.setEndCell(excellIndexFlag + i);
+            this.excellIndex = excelPosition.getEndCell();
+        }
+        mergeSheet(getSheet(), excelPosition, row.getRowNum());
         //初始化cellValue的值
-        String titleValue = (String) ExcelHeadUtil.setCellValue(excelPosition, clazz, f);
+        String titleValue = (String) ExcelHeadUtil.setCellValue(excelPosition, clazz, field);
+
         //文本替换
         if (type == 1) {
             String annotationValue = this.annotrationMap.get(titleValue);
             if (StringUtils.isNotBlank(annotationValue)) {
                 titleValue = annotationValue;
+                excelPosition.setTitle(annotationValue);
             }
         }
         //创建单元格,一行有很多个单元格
@@ -278,9 +358,21 @@ public class ExcelExportGenerate<T> {
         this.dataFormat = dataFormat;
     }
 
-    public Sheet getSheet() {
+    public Sheet getSheet() throws NotFoundException {
+        if (sheet == null) {
+            return this.sheet = ExcelSheetUtils.setSheet(workBook, utils.getAnnotation(className, ExcelISheet.class.getName()), this);
+        }
         return sheet;
     }
+
+    public CtClass getCtClass(String className) throws NotFoundException {
+        if (this.ctClass == null) {
+            CtClass ct = utils.getCtClass(className);
+            this.ctClass = ct;
+        }
+        return ctClass;
+    }
+
 
     public void setSheet(Sheet sheet) {
         this.sheet = sheet;
@@ -294,6 +386,33 @@ public class ExcelExportGenerate<T> {
         Long aLong = addNum();
         this.id = aLong;
         return this;
+    }
+
+
+    public ExcelExportGenerate generateListField(List pvList) {
+        fieldList.add(pvList);
+        return this;
+    }
+
+
+    public Annotation hasListField(CtField ctField, List list) {
+//        if (CollectionUtils.isEmpty(list)) {
+//            return null;
+//        }
+        FieldInfo fieldInfo = ctField.getFieldInfo();
+        if (fieldInfo == null) {
+            return null;
+        }
+        AnnotationsAttribute attribute = (AnnotationsAttribute) fieldInfo.getAttribute(AnnotationsAttribute.visibleTag);
+        if (attribute == null || fieldInfo == null) {
+            return null;
+        }
+        Annotation value2 = attribute.getAnnotation(ExcelListField.class.getName());
+        if (value2 == null) {
+            return null;
+        }
+
+        return value2;
     }
 
 
