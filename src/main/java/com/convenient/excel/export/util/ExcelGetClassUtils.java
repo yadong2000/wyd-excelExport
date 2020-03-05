@@ -79,11 +79,14 @@ public class ExcelGetClassUtils {
 //
 //            }
 //        }
-        if (excelPosition.getStartRow() != null) {
-            putRow(excelPosition.getStartRow(), sheet);
-        }
-        if (excelPosition.getEndRow() != null) {
-            putRow(excelPosition.getEndRow(), sheet);
+//        if (excelPosition.getStartRow() != null) {
+//            putRow(excelPosition.getStartRow(), sheet);
+//        }
+//        if (excelPosition.getEndRow() != null) {
+//            putRow(excelPosition.getEndRow(), sheet);
+//        }
+        for (int i = excelPosition.getStartRow(); i <= excelPosition.getEndRow(); i++) {
+            putRow(i, sheet);
         }
         concurrentSheetHashMap.put(sheet, this.concurrentHashMap);
         return concurrentSheetHashMap.get(sheet);
