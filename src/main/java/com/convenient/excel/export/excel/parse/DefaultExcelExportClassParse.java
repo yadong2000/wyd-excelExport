@@ -26,7 +26,6 @@ public class DefaultExcelExportClassParse implements ExcelExportClassParse {
 
     private CtClass ctClass;
 
-    public final Map<String, Annotation> annotationMap = new HashMap<>();
 
     public final Map<String, Integer> fieldIndexMap = new LinkedHashMap<>();
 
