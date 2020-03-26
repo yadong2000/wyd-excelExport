@@ -182,9 +182,6 @@ public class DefaultExcelExportClassParse implements ExcelExportClassParse {
         return pool;
     }
 
-    public Map<String, Annotation> getAnnotationMap() {
-        return annotationMap;
-    }
 
     public AnnotationsAttribute getAnnotationsAttribute(CtField declaredField) {
         AnnotationsAttribute attribute = (AnnotationsAttribute) declaredField.getFieldInfo()

@@ -19,11 +19,9 @@ import java.util.Map;
 
 public class ExcelExportGenerate {
 
-    private String sheetName;
 
     private Workbook workBook;
 
-    private DataFormat xssfDataFormat;
 
     private Sheet sheet;
     private int rowHeadNum;
@@ -160,9 +158,7 @@ public class ExcelExportGenerate {
     }
 
     public Row putRowIfAbsent(Integer index) {
-        if (index == null) {
-            System.out.println("========");
-        }
+
         Row row = this.rowMap.get(index);
         if (row == null) {
             row = this.sheet.createRow(index);
@@ -238,20 +234,7 @@ public class ExcelExportGenerate {
         return workBook;
     }
 
-    public ExcelExportPropertyParse getPropertyParse() {
-        return propertyParse;
-    }
 
-    public boolean checkChineseName(String name) {
-        int n = 0;
-        for (int i = 0; i < name.length(); i++) {
-            n = (int) name.charAt(i);
-            if (!(19968 <= n && n < 40869)) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public int getRowHeadNum(int rowNum) {
         if (rowNum > this.rowHeadNum) {

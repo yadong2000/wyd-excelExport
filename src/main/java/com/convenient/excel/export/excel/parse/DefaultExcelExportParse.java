@@ -20,15 +20,12 @@ import java.util.stream.IntStream;
 
 public class DefaultExcelExportParse implements ExcelExportPropertyParse {
 
-    // private final Map<String, Class> HEADMAP = new HashMap<>();
     private final Map<String, ExcelExportProperty> PROPERTYMAP = new LinkedHashMap<>();
 
     private final Map<String, ExcelExportProperty> LIST_PROPERTYMAP = new LinkedHashMap<>();
-    private final List<Map<String, String>> LIST_TRANTOR = new ArrayList<>();
 
     private final Map<String, ExcelExportProperty> HAS_VALUE_PROPERTYMAP = new LinkedHashMap<>();
 
-    // private final Map<String, List<ExcelExportProperty>> rowCellMap = new HashMap<>();
 
     private ExcelExportClassParse classParse;
 
@@ -184,13 +181,7 @@ public class DefaultExcelExportParse implements ExcelExportPropertyParse {
         return sheetName;
     }
 
-    public ExcelRuleCenter getRuleCenter() {
-        return ruleCenter;
-    }
 
-    public Map<String, ExcelExportProperty> getHAS_VALUE_PROPERTYMAP() {
-        return HAS_VALUE_PROPERTYMAP;
-    }
 
     public static void main(String[] args) throws NotFoundException, NoSuchFieldException, IllegalAccessException, IOException, IOException {
         List<StationDiagramOutput.SubLostPower> lostPowerList = new ArrayList<>();
@@ -241,9 +232,6 @@ public class DefaultExcelExportParse implements ExcelExportPropertyParse {
                     + lostPowerList2 + "totalLost " + output.getTotal());
             outputList.add(output);
         });
-        // Map<String, ExcelExportProperty> propertyMap =
-        // excelExportParse.parseListField(lostPowerList);
-        //
         ExcelExportGenerate excelExportGenerate = new ExcelExportGenerate(new DefaultExcelExportParse()
                 , null);
         ExcelExportGenerate generate = excelExportGenerate.generateHead(StationDiagramOutput.class, lostPowerList);

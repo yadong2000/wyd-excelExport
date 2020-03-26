@@ -17,7 +17,6 @@ public class DefaultExcelRuleCenter implements ExcelRuleCenter {
         Integer cellDistance = property.getCellDistance();
         int afterlistFieldDistance = cellDistance * listFieldmap.size();// 在动态计算之后偏移的位置
         Map<String, ExcelExportProperty> tail = new LinkedHashMap<>();
-//        boolean flag = true;
         for (Map.Entry<String, ExcelExportProperty> entry : map.entrySet()) {
             String k = entry.getKey();
             ExcelExportProperty v = entry.getValue();
