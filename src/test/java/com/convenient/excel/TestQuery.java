@@ -1,0 +1,54 @@
+package com.convenient.excel;
+
+
+import com.convenient.excel.beans.dto.ExcelFieldDTO;
+import com.convenient.excel.beans.entity.ExcelSheet;
+import com.convenient.excel.controller.ExcelExportHandler;
+import com.convenient.excel.generate.ExcelExportGenerate;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.r2dbc.core.ReactiveSelectOperation;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import reactor.core.publisher.Flux;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+
+@SpringBootTest(classes = WydExportApplication.class)
+@TestPropertySource(value = {"classpath:application.properties"})
+@RunWith(SpringRunner.class)
+public class TestQuery {
+
+
+    @Autowired
+    ReactiveSelectOperation selectOperation;
+    @Autowired
+    ExcelExportHandler excelExportHandler;
+    public static String para = "{\"startTime\":\"2020-01\",\"endTime\":\"2020-08\",\"stationCodes\":[380,3800,56,360],\"dateType\":\"month\",\"orderFiled\":\"report_time\",\"orderType\":\"asc\",\"pageNum\":1,\"pageSize\":10}";
+
+    @Test
+    public void testQuery() throws IOException {
+        final String url = "/config/event/";
+
+        Map<ExcelSheet, List<ExcelFieldDTO>> excelBody = excelExportHandler.selectExcelBody(url, Flux.just(para));
+        ExcelExportGenerate excelExportGenerate = new ExcelExportGenerate();
+        excelBody.forEach((sheet, fields) -> {
+            Sheet sheet1 = excelExportGenerate.generateSheet(sheet);
+            excelExportGenerate.generateHeadCell(sheet1, fields);
+            excelExportGenerate.generateBodyRow(Collections.EMPTY_LIST);
+        });
+        excelExportGenerate.write(new FileOutputStream(new File("D:\\test\\excel\\" + System.currentTimeMillis() + ".xlsx")));
+    }
+
+
+}
