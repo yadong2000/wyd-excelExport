@@ -5,7 +5,12 @@ import com.convenient.excel.beans.dto.ExcelFieldDTO;
 import com.convenient.excel.beans.entity.ExcelSheet;
 import com.convenient.excel.controller.ExcelExportHandler;
 import com.convenient.excel.generate.ExcelExportGenerate;
+import com.convenient.excel.generate.ExcelExportImport;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,15 @@ public class TestQuery {
             excelExportGenerate.generateBodyRow(Collections.EMPTY_LIST);
         });
         excelExportGenerate.write(new FileOutputStream(new File("D:\\test\\excel\\" + System.currentTimeMillis() + ".xlsx")));
+    }
+
+
+    @Autowired
+    ExcelExportImport excelExportImport;
+    @Test
+    public void importExcel() throws Exception {
+        String path = "D:\\test\\excel\\04-组串式逆变器报表.xlsx";
+        excelExportImport.importExcel(path);
     }
 
 

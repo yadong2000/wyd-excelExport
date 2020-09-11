@@ -46,7 +46,7 @@ public class MegeSort {
     private static void sort(Integer[] a, Integer[] temp, int leftPos, int rightPos, int rightEnd) {
         int leftEnd = rightPos - 1;
         int tmpPos = leftPos;
-        int numElements = rightEnd - leftPos + 1;//为什么加1
+        int numElements = rightEnd - leftPos + 1;//
         while (leftPos <= leftEnd && rightPos <= rightEnd)
             if (a[leftPos].compareTo(a[rightPos]) <= 0) {
                 temp[tmpPos++] = a[leftPos++];

@@ -1,10 +1,12 @@
 package com.convenient.excel.beans.entity;
 
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 @Data
 public class ExcelField {
     private Long excelSheetId;//` bigint(20) NOT NULL,
+    @Id
     private Long excelFieldId;//` bigint(20) NOT NULL,
     private String excelFieldName;//` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     private String excelFieldTitle;//` varchar(100) NOT NULL,
