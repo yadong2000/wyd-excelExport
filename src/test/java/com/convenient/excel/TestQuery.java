@@ -37,11 +37,12 @@ public class TestQuery {
     @Autowired
     ExcelExportHandler excelExportHandler;
     public static String para = "{\"startTime\":\"2020-01\",\"endTime\":\"2020-08\",\"stationCodes\":[380,3800,56,360],\"dateType\":\"month\",\"orderFiled\":\"report_time\",\"orderType\":\"asc\",\"pageNum\":1,\"pageSize\":10}";
+    public static final String url = "/config/event/";
+    @Autowired
+    ExcelExportImport excelExportImport;
 
     @Test
     public void testQuery() throws IOException {
-        final String url = "/config/event/";
-
         Map<ExcelSheet, List<ExcelFieldDTO>> excelBody = excelExportHandler.selectExcelBody(url, Flux.just(para));
         ExcelExportGenerate excelExportGenerate = new ExcelExportGenerate();
         excelBody.forEach((sheet, fields) -> {
@@ -53,8 +54,8 @@ public class TestQuery {
     }
 
 
-    @Autowired
-    ExcelExportImport excelExportImport;
+
+
     @Test
     public void importExcel() throws Exception {
         String path = "D:\\test\\excel\\04-组串式逆变器报表.xlsx";

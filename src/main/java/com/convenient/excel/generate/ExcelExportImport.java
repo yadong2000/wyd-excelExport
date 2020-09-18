@@ -52,8 +52,10 @@ public class ExcelExportImport {
         getway.setUpdateUserId(1);
         getway.setUserId(1);
         //   Mono<ExcelGetway> using = insertOperation.insert(ExcelGetway.class).using(getway);
-        Mono<ExcelField> then2 = null;
+        Mono<ExcelField> excelFieldMono = Mono.empty();
         int numberOfSheets = workBook.getNumberOfSheets();
+        Mono<ExcelRowConfDTO> rowConfDTOMono = Mono.empty();
+        Mono<ExcelSheetDTO> sheetDTOMono = Mono.empty();
         for (int i = 0; i < numberOfSheets; i++) {
             Sheet sheetAt = workBook.getSheetAt(i);
 
@@ -65,51 +67,66 @@ public class ExcelExportImport {
             excelSheet.setUpdateUserId(getway.getUserId());
             excelSheet.setUserId(getway.getUserId());
             excelSheet.setExcelSheetId(UniqueIDUtil.getUniqueID());
-            Mono<ExcelSheetDTO> then = (insertOperation.insert(ExcelSheetDTO.class).using(excelSheet));
+            sheetDTOMono = sheetDTOMono.then(insertOperation.insert(ExcelSheetDTO.class).using(excelSheet));
             int physicalNumberOfRows = sheetAt.getPhysicalNumberOfRows();
             for (int rowBreak = 0; rowBreak < physicalNumberOfRows; rowBreak++) {
                 Row row = sheetAt.getRow(rowBreak);
                 if (row == null) {
                     continue;
                 }
-
                 ExcelRowConfDTO rowConfDTO = new ExcelRowConfDTO();
                 rowConfDTO.setExcelRowId(UniqueIDUtil.getUniqueID());
                 rowConfDTO.setSheetId(excelSheet.getExcelSheetId());
-                Mono<ExcelRowConfDTO> then1 = then.then(insertOperation.insert(ExcelRowConfDTO.class).using(rowConfDTO));
+                rowConfDTOMono = rowConfDTOMono.then(insertOperation.insert(ExcelRowConfDTO.class).using(rowConfDTO));
                 int numberOfCells = row.getPhysicalNumberOfCells();
                 for (int i1 = 0; i1 < numberOfCells; i1++) {
                     Cell cell = row.getCell(i1);
                     if (cell == null) {
                         continue;
                     }
-
                     ExcelField excelField = new ExcelField();
                     excelField.setExcelFieldId(UniqueIDUtil.getUniqueID());
                     excelField.setExcelSheetId(excelSheet.getExcelSheetId());
                     excelField.setExcelStartCellIndex(cell.getColumnIndex());
                     excelField.setExcelEndRowIndex(cell.getColumnIndex());
-                    if (cell.getStringCellValue() != null) {
-                        excelField.setExcelFieldTitle(cell.getStringCellValue());
+                    CellType cellType = cell.getCellType();
+                    int code = cellType.getCode();
+                    String value = null;
+                    switch (code) {
+                        case -1:
+                            break;
+                        case 0:
+                            value = String.valueOf(cell.getNumericCellValue());
+                            break;
+                        case 1:
+                            value = cell.getStringCellValue();
+                            break;
+                        case 2:
+                            value = cell.getCellFormula();
+                            break;
+                        case 3:
+                            value = cell.getStringCellValue();
+                            break;
+
                     }
-                    if(cell.getDateCellValue()!=null){
-                        excelField.setExcelFieldTitle(cell.getDateCellValue().toString());
+                    if (value != null && !value.trim().equals("")) {
+                        excelField.setExcelFieldTitle(value);
+                    } else {
+                        continue;
                     }
-
-
-
                     excelField.setExcelEndRowIndex(cell.getRow().getRowNum());
                     excelField.setExcelStartRowIndex(cell.getRowIndex());
-                    then2 = then1.then(insertOperation.insert(ExcelField.class).using(excelField));
+                    excelFieldMono = excelFieldMono.then(insertOperation.insert(ExcelField.class).using(excelField));
                 }
             }
-            then2
-                    .then(insertOperation.insert(ExcelGetway.class).using(getway))
-                    .as(operator::transactional)
-                    .log()
-                    .block();
-
         }
+        excelFieldMono
+                .then(insertOperation.insert(ExcelGetway.class).using(getway))
+                .then(rowConfDTOMono)
+                .then(sheetDTOMono)
+                .as(operator::transactional)
+                .log()
+                .block();
     }
 
 }
