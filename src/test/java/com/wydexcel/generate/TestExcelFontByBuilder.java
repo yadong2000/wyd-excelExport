@@ -14,7 +14,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestExcelFontByBuilder extends com.convenient.excel.Base {
+public class TestExcelFontByBuilder extends Base {
     public TestExcelFontByBuilder() {
         super();
     }

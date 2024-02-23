@@ -1,12 +1,12 @@
 package com.wydexcel.generate;
 
 import com.alibaba.fastjson.JSON;
-import com.convenient.excel.util.GetDataFromDataBase;
 import com.wydexcel.generate.properties.ExcelAbstractSheetProperties;
 import com.wydexcel.generate.properties.ExcelFieldProperties;
 import com.wydexcel.generate.properties.generate.ExcelConfGenerateImpl;
 import com.wydexcel.generate.properties.generate.ExcelSheetGenerate;
 import com.wydexcel.generate.properties.s.*;
+import com.wydexcel.generate.util.GetDataFromDataBase;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Before;

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 
-public class TestExcelDataFormatByBuilder extends com.convenient.excel.Base {
+public class TestExcelDataFormatByBuilder extends  Base {
 
 
     @Before

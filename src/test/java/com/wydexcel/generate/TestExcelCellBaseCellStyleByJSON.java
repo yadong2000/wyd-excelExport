@@ -81,7 +81,7 @@ public class TestExcelCellBaseCellStyleByJSON {
      */
     @Test
     public void testBuilderAndgetDataFromDbWithBaseCellStyle() {
-        ExcelContext excelContext = ExcelContextAllContext.getInstance().parse(json).parseComplete(); //如果追求效率，这里可以改成异步
+        ExcelContext excelContext = ExcelContextAllContext.getInstance().parse(json).parseCompleteById("demo-for-easy"); //如果追求效率，这里可以改成异步
         ExcelSheetGenerate sheetGenerator = excelContext.getSheetGenerator("sheet1");
         //根据map生成excel
         List<Demo> dataFromDb = getDataFromDb();
@@ -95,7 +95,7 @@ public class TestExcelCellBaseCellStyleByJSON {
     @Test
     public void testBuilderAndgetObjectDataFromDbWithBaseCellStyle() throws ExecutionException, InterruptedException {
         CompletableFuture<ExcelContext> contextCompletableFuture = CompletableFuture.supplyAsync(() -> {
-            return ExcelContextAllContext.getInstance().parse(json).parseComplete();
+            return ExcelContextAllContext.getInstance().parse(json).parseCompleteById("demo-for-easy");
         });
         //根据map生成excel
         List<Demo> dataFromDb = getDataFromDb();
@@ -115,7 +115,7 @@ public class TestExcelCellBaseCellStyleByJSON {
 
     @Test
     public void testBuilderAndgetMapDataFromDbWithBaseCellStyle() {
-        ExcelContext excelContext = ExcelContextAllContext.getInstance().parse(json).parseComplete(); //如果追求效率，这里可以改成异步
+        ExcelContext excelContext = ExcelContextAllContext.getInstance().parse(json).parseCompleteById("demo-for-easy"); //如果追求效率，这里可以改成异步
         ExcelSheetGenerate sheetGenerator = excelContext.getSheetGenerator("sheet1");
         //根据map生成excel
         List<Map<String, Object>> dataFromDb = getDataFromDataBase();

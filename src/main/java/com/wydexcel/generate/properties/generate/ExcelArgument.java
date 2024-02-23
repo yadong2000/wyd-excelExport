@@ -41,11 +41,4 @@ public class ExcelArgument {
 
 
 
-    public void generate(Cell cell, boolean isBody, ExcelFieldProperties properties) {
-        String key = getKey(properties.getExcelFieldName(), isBody);
-        for (Process process : map.get(key)) {
-            process.excelPropertySet(cell, getExcelPropertity(process.getType(), key), isBody);
-        }
-    }
-
 }
