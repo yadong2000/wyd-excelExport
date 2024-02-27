@@ -1,5 +1,10 @@
 package com.wydexcel.generate.properties.s;
 
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
 public class ExcelFreezePaneProperties {
 
 

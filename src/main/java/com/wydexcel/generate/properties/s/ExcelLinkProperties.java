@@ -1,8 +1,11 @@
 package com.wydexcel.generate.properties.s;
 
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.apache.poi.common.usermodel.HyperlinkType;
-
+@Builder
+@NoArgsConstructor
 public class ExcelLinkProperties extends ExcelCellBase {
 
 

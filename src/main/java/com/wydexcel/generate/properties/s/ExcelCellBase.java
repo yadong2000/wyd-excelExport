@@ -3,8 +3,14 @@ package com.wydexcel.generate.properties.s;
 import com.wydexcel.generate.exception.ExcelParseException;
 import com.wydexcel.generate.process.Process;
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
-public  class ExcelCellBase<T extends Process> {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ExcelCellBase<T extends Process> {
 
     private String fieldName;
     private String type;

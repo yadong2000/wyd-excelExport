@@ -2,7 +2,11 @@ package com.wydexcel.generate.properties.s;
 
 
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
 public class ExcelFormatProperties extends ExcelCellBase {
 
 

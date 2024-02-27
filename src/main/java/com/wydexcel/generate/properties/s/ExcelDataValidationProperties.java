@@ -1,7 +1,11 @@
 package com.wydexcel.generate.properties.s;
 
 import com.wydexcel.generate.properties.s.validate.ExcelDataValidationBaseProperties;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
 public class ExcelDataValidationProperties {
 
     private Integer firstRow;

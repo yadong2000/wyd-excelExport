@@ -39,20 +39,26 @@ public class TestExcelCellBaseCellStyleByBuilder {
                                 .field(new ExcelFieldProperties("title", "标题", 0, 0, "base_cellstyle"))
                                 .field(new ExcelFieldProperties("salary", "工资", 0, 1, "base_cellstyle"))
                                 .property(() -> {
-                                    ExcelCellBaseProperties cellBaseProperties = new ExcelCellBaseProperties();
-                                    cellBaseProperties.setVerticalAlignment(VerticalAlignment.CENTER);
-                                    cellBaseProperties.setBorderRight(BorderStyle.DOUBLE);
-                                    cellBaseProperties.setId("base_cellstyle");
-                                    cellBaseProperties.setAlignment(HorizontalAlignment.CENTER);
-                                    cellBaseProperties.setColumnWidth(15);
-                                    cellBaseProperties.setIsHeader(2);
-                                    cellBaseProperties.setRightBorderColor((short) 12);
-                                    cellBaseProperties.setFillBackgroundColor((short) 23);
-                                    cellBaseProperties.setFillPattern(FillPatternType.THICK_BACKWARD_DIAG);
-                                    cellBaseProperties.setLeftBorderColor((short) 24);
-                                    cellBaseProperties.setRightBorderColor((short) 24);
-                                    cellBaseProperties.setIsHeader(2);
-                                    return cellBaseProperties;
+//                                    ExcelCellBaseProperties cellBaseProperties = new ExcelCellBaseProperties();
+//                                    cellBaseProperties.setVerticalAlignment(VerticalAlignment.CENTER);
+//                                    cellBaseProperties.setBorderRight(BorderStyle.DOUBLE);
+//                                    cellBaseProperties.setId("base_cellstyle");
+//                                    cellBaseProperties.setAlignment(HorizontalAlignment.CENTER);
+//                                    cellBaseProperties.setColumnWidth(15);
+//                                    cellBaseProperties.setIsHeader(2);
+//                                    cellBaseProperties.setRightBorderColor((short) 12);
+//                                    cellBaseProperties.setFillBackgroundColor((short) 23);
+//                                    cellBaseProperties.setFillPattern(FillPatternType.THICK_BACKWARD_DIAG);
+//                                    cellBaseProperties.setLeftBorderColor((short) 24);
+//                                    cellBaseProperties.setRightBorderColor((short) 24);
+//                                    cellBaseProperties.setIsHeader(2);
+
+                                    return ExcelCellBaseProperties.builder()
+                                            .verticalAlignment(VerticalAlignment.CENTER)
+                                            .borderRight(BorderStyle.DOUBLE)
+                                            .alignment(HorizontalAlignment.CENTER)
+
+                                            .build();
                                 })
                                 .build())
                         .type(ExcelWorkPlaceProperties.VERSION_2007)

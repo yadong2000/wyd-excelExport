@@ -1,7 +1,11 @@
 package com.wydexcel.generate.properties.s;
 
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@NoArgsConstructor
 public class ExcelFontProperties extends ExcelCellBase {
 
     private String fontName;//` varchar(50) NOT NULL,

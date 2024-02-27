@@ -1,10 +1,13 @@
 package com.wydexcel.generate.properties.s;
 
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Builder
+@NoArgsConstructor
 public class ExcelRichTextCollectionProperties extends ExcelCellBase {
 
     @Override

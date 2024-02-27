@@ -2,11 +2,14 @@ package com.wydexcel.generate.properties.s;
 
 import com.wydexcel.generate.process.WydExcelCellBaseProcessImpl;
 import com.wydexcel.generate.process.context.ExcelContextAllContext;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
-
+@Builder
+@NoArgsConstructor
 public class ExcelCellBaseProperties extends ExcelCellBase<WydExcelCellBaseProcessImpl> {
     //    private String fieldName;//` varchar(50) NOT NULL,ExcelBaseDto
     private String hyperlink;
